@@ -46,6 +46,8 @@ def newshop():
 #Обработка формы для для заведения нового магазина
 @app.route('/fnewshop')
 def fnewshop():
+    #TODO валидация данных с формы. Если ошибка возвращаем
+    #исходную страницу с сообщением о необходимости правильном заполнении формы
     sn = request.args.get('inShopNumber')
     flash('Номер магазина: ' + sn)
     return redirect(url_for('newshop')) 
