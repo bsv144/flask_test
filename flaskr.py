@@ -36,7 +36,7 @@ app.config.from_pyfile('config.ini', silent=True)
 
 @app.route('/')
 def index():
-    return render_template('adminlte_main.html')
+    return render_template('index.html')
 
 #Вывод страницы для заведения нового магазина
 @app.route('/newshop')
