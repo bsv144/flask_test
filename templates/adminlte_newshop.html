@@ -1,0 +1,52 @@
+{% extends "adminlte_main.html" %}
+			{% block content %}
+			<div class="row">
+				<div class="col-md-4">
+					<form class="form-horizontal" action="fnewshop" method="get">
+						<div class="form-group">
+							<label for="inShopNumber" class="col-md-4 control-label">Номер магазина</label>
+							<div class="col-md-4">
+								<input class="form-control" name="inShopNumber" id="inShopNumber" placeholder="165" type="number" required min='0' max='999'>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inNetIp" class="col-md-4 control-label">Подсеть магазина</label>
+							<div class="col-md-4">
+								<input class="form-control" name="inNetIp" id="inNetIp" placeholder="192.168.165.0" type="text" required pattern="(\d{1,3}\.){3}\d{1,3}">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-offset-4 col-md-10">
+							  <button type="submit" class="btn btn-default">Выполнить</button>
+							</div>
+						</div>
+						
+					</form>
+				</div>
+				<div class="col-md-6">
+					<div class="well">
+						<p>При выполнении данного задания будут созадны:</p>
+						<ul>
+						  <li> Учётная запись в домене </li>
+						  <li> Почтовый ящик </li>
+						  <li> Номер ip телефонии </li>
+						  <li> SSL ключ и сконфигурирован openvpn сервер</li>
+						</ul>
+						<p>Сконфигурированные параметры будут отправлены на почтовый ящик магазина и сохранены в логах сервера</p>
+					</div>
+			</div>
+		</div> <!-- End of row-->
+			
+			  
+			
+        
+			{% with messages = get_flashed_messages() %}
+			  {% if messages %}
+				<ul class=flashes>
+				{% for message in messages %}
+				  <li>{{ message }}</li>
+				{% endfor %}
+				</ul>
+			  {% endif %}
+			{% endwith %}
+			{% endblock %}
