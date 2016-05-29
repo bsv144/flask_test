@@ -1,4 +1,5 @@
 import sqlite3
+import paramiko
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from contextlib import closing
 from zabbix_api import ZabbixAPI 
@@ -48,8 +49,17 @@ def newshop():
 def fnewshop():
     #TODO валидация данных с формы. Если ошибка возвращаем
     #исходную страницу с сообщением о необходимости правильном заполнении формы
+    ##Создаём ключи и конфигурацию openvpn
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname='192.168.3.6', username='root', password='JgnbvJ3')
+    stdin, stdout, stderr = client.exec_command('ls -l')
+    data = stdout.read() + stderr.read()
+    client.close()
+    ##Создаём учётку в AD
+    ##Создаём номер на FreePBX
     sn = request.args.get('inShopNumber')
-    flash('Номер магазина: ' + sn)
+    flash('Номер магазина: ' + data.decode("utf-8"))
     return redirect(url_for('newshop')) 
 
 
