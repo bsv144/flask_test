@@ -6,7 +6,7 @@ from zabbix_api import ZabbixAPI
 
 app = Flask(__name__)
 
-DATABASE = 'db\\flask_test.db'
+#DATABASE = 'db\\flask_test.db'
 
 app.config.from_pyfile('config.ini', silent=True)
 
@@ -52,7 +52,7 @@ def fnewshop():
     ##Создаём ключи и конфигурацию openvpn
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname='192.168.3.6', username='root', password='JgnbvJ3')
+    client.connect(hostname=app.config['FNEWSHOP_SSH_HOST'], username=app.config['FNEWSHOP_SSH_USER'], password=app.config['FNEWSHOP_SSH_PASSWORD'])
     stdin, stdout, stderr = client.exec_command('ls -l')
     data = stdout.read() + stderr.read()
     client.close()
@@ -67,8 +67,8 @@ def fnewshop():
 def zabbix():
     #pass
     #Получаем список групп хостов с zabbix
-    zapi = ZabbixAPI(server="http://192.168.3.9/zabbix/")
-    zapi.login("Admin", "zabbix")
+    zapi = ZabbixAPI(server=app.config['ZABBIX_SERVER'])
+    zapi.login(app.config['ZABBIX_USER'], app.config['ZABBIX_PASSWORD'])
     hostgroups = zapi.hostgroup.get({"output":["name","groupid"], "real_hosts":True})
     return render_template('zabbix.html', hostgroups=hostgroups)
 
