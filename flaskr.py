@@ -1,4 +1,3 @@
-import sqlite3
 import paramiko
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from contextlib import closing
@@ -6,34 +5,7 @@ from zabbix_api import ZabbixAPI
 
 app = Flask(__name__)
 
-#DATABASE = 'db\\flask_test.db'
-
 app.config.from_pyfile('config.ini', silent=True)
-
-
-# def connect_db():
-    # print DATABASE
-    # return sqlite3.connect(app.config['DATABASE'])
-
-# def init_db():
-    # with app.app_context():
-        # print ('Test')
-        # ##print app.config['DATABASE']
-        # with closing(connect_db()) as db:
-            # with app.open_resource('D:\\Web\\flask_test\\db\\schema.sql', mode='r') as f:
-                # db.cursor().executescript(f.read())
-            # db.commit()
-
-# @app.before_request
-# def before_request():
-    # g.db = connect_db()
-
-# @app.teardown_request
-# def teardown_request(exception):
-    # db = getattr(g, 'db', None)
-    # if db is not None:
-        # db.close()
-
 
 @app.route('/')
 def index():
@@ -52,12 +24,19 @@ def fnewshop():
     ##Создаём ключи и конфигурацию openvpn
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=app.config['FNEWSHOP_SSH_HOST'], username=app.config['FNEWSHOP_SSH_USER'], password=app.config['FNEWSHOP_SSH_PASSWORD'])
+    try:
+    	client.connect(hostname=app.config['FNEWSHOP_SSH_HOST'], username=app.config['FNEWSHOP_SSH_USER'], password=app.config['FNEWSHOP_SSH_PASSWORD'])
+    except Exception, e:
+    	#raise e
+    	data = "Error connect to openvpn server"
     stdin, stdout, stderr = client.exec_command('ls -l')
+    #TODO checkout stderr for correct  script output
     data = stdout.read() + stderr.read()
     client.close()
-    ##Создаём учётку в AD
-    ##Создаём номер на FreePBX
+    ##TODO Создаём учётку в AD
+    ##TODO Создаём номер на FreePBX
+    ##TODO make email
+    ##TODO make mikrotik config
     sn = request.args.get('inShopNumber')
     flash('Номер магазина: ' + data.decode("utf-8"))
     return redirect(url_for('newshop')) 
@@ -76,6 +55,3 @@ def zabbix():
 	
 if __name__ == '__main__':
     app.run()
-
-##import sys
-##sys.path.append("D:\\Web\\flask_test")
