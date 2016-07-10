@@ -26,9 +26,9 @@ def fnewshop():
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
     	client.connect(hostname=app.config['FNEWSHOP_SSH_HOST'], username=app.config['FNEWSHOP_SSH_USER'], password=app.config['FNEWSHOP_SSH_PASSWORD'])
-    except Exception, e:
+    except:
     	#raise e
-    	data = "Error connect to openvpn server"
+    	data = "Error connect to openvpn server sys.exc_info()[0]"
     stdin, stdout, stderr = client.exec_command('ls -l')
     #TODO checkout stderr for correct  script output
     data = stdout.read() + stderr.read()
