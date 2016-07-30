@@ -1,0 +1,5 @@
+Flask
+paramiko
+zabbix_api
+flask-simpleldap
+Flask-SQLAlchemy
