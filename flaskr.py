@@ -2,10 +2,26 @@ import paramiko
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from contextlib import closing
 from zabbix_api import ZabbixAPI 
+from flask_simpleldap import LDAP
 
 app = Flask(__name__)
 
 app.config.from_pyfile('config.ini', silent=True)
+
+ldap = LDAP(app)
+
+
+@app.before_request
+def before_request():
+    g.user = None
+    if 'user_id' in session:
+        # This is where you'd query your database to get the user info.
+        g.user = {}
+        # Create a global with the LDAP groups the user is a member of.
+		g.ldap_groups = ldap.get_user_groups(user=session['user_id'])
+
+@app.route('/login', methods=['GET','POST'])
+def login(): pass
 
 @app.route('/')
 def index():
