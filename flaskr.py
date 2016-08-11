@@ -3,6 +3,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 from contextlib import closing
 from zabbix_api import ZabbixAPI 
 from flask_simpleldap import LDAP
+import ldap
 
 app = Flask(__name__)
 
@@ -50,6 +51,23 @@ def fnewshop():
     data = stdout.read() + stderr.read()
     client.close()
     ##TODO Создаём учётку в AD
+    con = ldap.initialize('ldap://localhost:389', bytes_mode=False)
+    con.simple_bind_s('login', 'secret_password')
+	# The dn of our new entry/object
+	dn="cn=replica,dc=example,dc=com" 
+	# A dict to help build the "body" of the object
+	attrs = {}
+	attrs['objectclass'] = ['top','organizationalRole','simpleSecurityObject']
+	attrs['cn'] = 'replica'
+	attrs['userPassword'] = 'aDifferentSecret'
+	attrs['description'] = 'User object for replication using slurpd'
+	# Convert our dict to nice syntax for the add-function using modlist-module
+	ldif = modlist.addModlist(attrs)
+	# Do the actual synchronous add-operation to the ldapserver
+	l.add_s(dn,ldif)
+	# Its nice to the server to disconnect and free resources when done
+	l.unbind_s()
+
     ##TODO Создаём номер на FreePBX
     ##TODO make email
     ##TODO make mikrotik config
