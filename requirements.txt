@@ -1,4 +1,5 @@
-Flask
+uwsgi
+flask
 paramiko
 zabbix_api
 flask-simpleldap
