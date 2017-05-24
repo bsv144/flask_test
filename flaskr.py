@@ -19,7 +19,7 @@ def before_request():
         # This is where you'd query your database to get the user info.
         g.user = {}
         # Create a global with the LDAP groups the user is a member of.
-		g.ldap_groups = ldap.get_user_groups(user=session['user_id'])
+        g.ldap_groups = ldap.get_user_groups(user=session['user_id'])
 
 @app.route('/login', methods=['GET','POST'])
 def login(): pass
@@ -42,31 +42,25 @@ def fnewshop():
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-    	client.connect(hostname=app.config['FNEWSHOP_SSH_HOST'], username=app.config['FNEWSHOP_SSH_USER'], password=app.config['FNEWSHOP_SSH_PASSWORD'])
+    	client.connect(hostname=app.config['SSH_OPENVPN'], username=app.config['SSH_OPENVPN_USER'], password=app.config['SSH_OPENVPN_PASSWORD'])
     except:
     	#raise e
     	data = "Error connect to openvpn server sys.exc_info()[0]"
-    stdin, stdout, stderr = client.exec_command('ls -l')
+    stdin, stdout, stderr = client.exec_command('/etc/openvpn/makeovpnclient.sh snb net/mask'.format(snb=SHOPNUMBER,net=NET,mask=MASK))
     #TODO checkout stderr for correct  script output
     data = stdout.read() + stderr.read()
     client.close()
     ##TODO Создаём учётку в AD
-    con = ldap.initialize('ldap://localhost:389', bytes_mode=False)
-    con.simple_bind_s('login', 'secret_password')
-	# The dn of our new entry/object
-	dn="cn=replica,dc=example,dc=com" 
-	# A dict to help build the "body" of the object
-	attrs = {}
-	attrs['objectclass'] = ['top','organizationalRole','simpleSecurityObject']
-	attrs['cn'] = 'replica'
-	attrs['userPassword'] = 'aDifferentSecret'
-	attrs['description'] = 'User object for replication using slurpd'
-	# Convert our dict to nice syntax for the add-function using modlist-module
-	ldif = modlist.addModlist(attrs)
-	# Do the actual synchronous add-operation to the ldapserver
-	l.add_s(dn,ldif)
-	# Its nice to the server to disconnect and free resources when done
-	l.unbind_s()
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+    	client.connect(hostname=app.config['SSH_WINADMIN'], username=app.config['SSH_WINADMIN_USER'], password=app.config['SSH_WINADMIN_PASSWORD'])
+    except:
+    	#raise e
+    	data = "Error connect to openvpn server sys.exc_info()[0]"
+    stdin, stdout, stderr = client.exec_command('new-aduser')
+    
+    
 
     ##TODO Создаём номер на FreePBX
     ##TODO make email
